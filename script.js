@@ -1,30 +1,50 @@
-// Select the button, display area, and loading indicator
-const jokeButton = document.getElementById("jokeButton");
-const jokeDisplay = document.getElementById("jokeDisplay");
-const loadingIndicator = document.getElementById("loadingIndicator");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Random Dad Joke Generator" />
+  <title>Dad Joke Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-// Function to fetch a joke from the API
-async function getJoke() {
-  // Show the loading indicator and hide the joke display
-  loadingIndicator.style.display = "block";
-  jokeDisplay.style.display = "none";
+<body>
+  <main class="wrap">
+    <section class="card" aria-label="Dad Joke Generator">
+      <header class="header">
+        <div class="badge">Humor App</div>
+        <h1>Random Dad Joke Generator</h1>
+        <p class="sub">Enjoy your daily dose of <span class="accent">cringe</span> 😄</p>
+      </header>
 
-  try {
-    // API endpoint for random dad jokes
-    const response = await fetch("https://icanhazdadjoke.com/", {
-      headers: { Accept: "application/json" }
-    });
-    const data = await response.json();
-    jokeDisplay.innerText = data.joke;
-  } catch (error) {
-    jokeDisplay.innerText = "Oops! Something went wrong. Try again!";
-    console.error("Error fetching joke:", error);
-  }
+      <div class="joke-area">
+        <div id="loadingIndicator" class="loading" aria-live="polite" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          Fetching peak dad energy...
+        </div>
 
-  // Hide the loading indicator and show the joke display
-  loadingIndicator.style.display = "none";
-  jokeDisplay.style.display = "block";
-}
+        <p id="jokeDisplay" class="joke" aria-live="polite">
+          Press the button for a joke!
+        </p>
+      </div>
 
-// Event listener for button click
-jokeButton.addEventListener("click", getJoke);
+      <div class="actions">
+        <button id="jokeButton" class="btn" type="button">
+          Get a New Joke
+        </button>
+        <button id="copyButton" class="btn ghost" type="button">
+          Copy
+        </button>
+      </div>
+
+      <footer class="footer">
+        <small>
+          Source: icanhazdadjoke.com • Tip: press <kbd>Enter</kbd>
+        </small>
+      </footer>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
