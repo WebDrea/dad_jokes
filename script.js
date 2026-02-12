@@ -1,50 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Random Dad Joke Generator" />
-  <title>Dad Joke Generator</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
+const jokeButton = document.getElementById("jokeButton");
+const copyButton = document.getElementById("copyButton");
+const jokeDisplay = document.getElementById("jokeDisplay");
+const loadingIndicator = document.getElementById("loadingIndicator");
 
-<body>
-  <main class="wrap">
-    <section class="card" aria-label="Dad Joke Generator">
-      <header class="header">
-        <div class="badge">Humor App</div>
-        <h1>Random Dad Joke Generator</h1>
-        <p class="sub">Enjoy your daily dose of <span class="accent">cringe</span> 😄</p>
-      </header>
+function setLoading(isLoading) {
+  loadingIndicator.hidden = !isLoading;
+  jokeDisplay.style.display = isLoading ? "none" : "block";
+  jokeButton.disabled = isLoading;
+  jokeButton.classList.toggle("disabled", isLoading);
+}
 
-      <div class="joke-area">
-        <div id="loadingIndicator" class="loading" aria-live="polite" hidden>
-          <span class="spinner" aria-hidden="true"></span>
-          Fetching peak dad energy...
-        </div>
+async function getJoke() {
+  setLoading(true);
 
-        <p id="jokeDisplay" class="joke" aria-live="polite">
-          Press the button for a joke!
-        </p>
-      </div>
+  try {
+    const response = await fetch("https://icanhazdadjoke.com/", {
+      headers: { Accept: "application/json" }
+    });
 
-      <div class="actions">
-        <button id="jokeButton" class="btn" type="button">
-          Get a New Joke
-        </button>
-        <button id="copyButton" class="btn ghost" type="button">
-          Copy
-        </button>
-      </div>
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      <footer class="footer">
-        <small>
-          Source: icanhazdadjoke.com • Tip: press <kbd>Enter</kbd>
-        </small>
-      </footer>
-    </section>
-  </main>
+    const data = await response.json();
+    jokeDisplay.textContent = data.joke;
 
-  <script src="script.js"></script>
-</body>
-</html>
+    // little pop animation
+    jokeDisplay.classList.remove("pop");
+    void jokeDisplay.offsetWidth; // reflow
+    jokeDisplay.classList.add("pop");
+  } catch (error) {
+    jokeDisplay.textContent = "Oops! Something went wrong. Try again!";
+    console.error("Error fetching joke:", error);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function copyJoke() {
+  const text = jokeDisplay.textContent.trim();
+  if (!text) return;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    copyButton.textContent = "Copied!";
+    setTimeout(() => (copyButton.textContent = "Copy"), 900);
+  } catch {
+    copyButton.textContent = "Copy failed";
+    setTimeout(() => (copyButton.textContent = "Copy"), 900);
+  }
+}
+
+jokeButton.addEventListener("click", getJoke);
+copyButton.addEventListener("click", copyJoke);
+
+// Keyboard support
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    // avoid triggering when focused on a button (it already handles it)
+    if (document.activeElement?.tagName !== "BUTTON") getJoke();
+  }
+});
+
+// Load one automatically on page open
+getJoke();
