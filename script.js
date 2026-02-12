@@ -13,20 +13,55 @@ function setLoading(isLoading) {
 async function getJoke() {
   setLoading(true);
 
+  // ⭐ Multiple joke sources
+  const apis = [
+    { url: "https://icanhazdadjoke.com/", type: "dad" },
+    { url: "https://official-joke-api.appspot.com/random_joke", type: "official" },
+    { url: "https://api.chucknorris.io/jokes/random", type: "chuck" },
+    { url: "https://geek-jokes.sameerkumar.website/api?format=json", type: "geek" },
+    { url: "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist", type: "jokeapi" }
+  ];
+
+  const choice = apis[Math.floor(Math.random() * apis.length)];
+
   try {
-    const response = await fetch("https://icanhazdadjoke.com/", {
-      headers: { Accept: "application/json" }
+    const response = await fetch(choice.url, {
+      headers: choice.type === "dad"
+        ? { Accept: "application/json" }
+        : {}
     });
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const data = await response.json();
-    jokeDisplay.textContent = data.joke;
 
-    // little pop animation
+    let joke = "";
+
+    if (choice.type === "dad") {
+      joke = data.joke;
+    } 
+    else if (choice.type === "official") {
+      joke = `${data.setup} — ${data.punchline}`;
+    } 
+    else if (choice.type === "chuck") {
+      joke = data.value;
+    } 
+    else if (choice.type === "geek") {
+      joke = data.joke;
+    } 
+    else if (choice.type === "jokeapi") {
+      joke = data.type === "single"
+        ? data.joke
+        : `${data.setup} — ${data.delivery}`;
+    }
+
+    jokeDisplay.textContent = joke;
+
+    // ⭐ Animation reset
     jokeDisplay.classList.remove("pop");
-    void jokeDisplay.offsetWidth; // reflow
+    void jokeDisplay.offsetWidth;
     jokeDisplay.classList.add("pop");
+
   } catch (error) {
     jokeDisplay.textContent = "Oops! Something went wrong. Try again!";
     console.error("Error fetching joke:", error);
@@ -52,13 +87,12 @@ async function copyJoke() {
 jokeButton.addEventListener("click", getJoke);
 copyButton.addEventListener("click", copyJoke);
 
-// Keyboard support
+// ⭐ Keyboard shortcut
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" || e.key === " ") {
-    // avoid triggering when focused on a button (it already handles it)
     if (document.activeElement?.tagName !== "BUTTON") getJoke();
   }
 });
 
-// Load one automatically on page open
+// ⭐ Auto load first joke
 getJoke();
