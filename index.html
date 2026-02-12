@@ -1,21 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Humor App - Get a Dad Joke</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Random Dad Joke Generator" />
+  <title>Dad Joke Generator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="container">
-    <div class="container">
+  <main class="wrap">
+    <section class="card" aria-label="Dad Joke Generator">
+      <header class="header">
+        <div class="badge">Humor App</div>
         <h1>Random Dad Joke Generator</h1>
-      <h2>Enjoy your daily dose of Cringe</h2>
-        <div id="jokeDisplay">Press the button for a joke!</div>
-        <div id="loadingIndicator" style="display: none;">Loading...</div>
-        <button id="jokeButton">Get a New Joke</button>
+        <p class="sub">Enjoy your daily dose of <span class="accent">cringe</span> 😄</p>
+      </header>
+
+      <div class="joke-area">
+        <div id="loadingIndicator" class="loading" aria-live="polite" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          Fetching peak dad energy...
+        </div>
+
+        <p id="jokeDisplay" class="joke" aria-live="polite">
+          Press the button for a joke!
+        </p>
       </div>
-    
+
+      <div class="actions">
+        <button id="jokeButton" class="btn" type="button">
+          Get a New Joke
+        </button>
+        <button id="copyButton" class="btn ghost" type="button">
+          Copy
+        </button>
+      </div>
+
+      <footer class="footer">
+        <small>
+          Source: icanhazdadjoke.com • Tip: press <kbd>Enter</kbd>
+        </small>
+      </footer>
+    </section>
+  </main>
+
   <script src="script.js"></script>
 </body>
 </html>
